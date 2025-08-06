@@ -33,3 +33,8 @@ target_include_directories(damper PRIVATE
 
 set_target_properties(damper PROPERTIES
     LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/plugin) # 生成在 plugin/
+
+# 安装配置：将插件安装到 release/bin/mujoco_plugin/
+install(TARGETS damper
+    LIBRARY DESTINATION "${CMAKE_CURRENT_SOURCE_DIR}/../../release/bin/mujoco_plugin"
+    COMPONENT plugins)
