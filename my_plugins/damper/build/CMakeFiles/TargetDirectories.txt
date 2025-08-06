@@ -1,0 +1,3 @@
+/home/ming/CMP/my_plugins/damper/build/CMakeFiles/damper.dir
+/home/ming/CMP/my_plugins/damper/build/CMakeFiles/edit_cache.dir
+/home/ming/CMP/my_plugins/damper/build/CMakeFiles/rebuild_cache.dir
