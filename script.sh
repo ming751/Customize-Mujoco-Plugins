@@ -90,3 +90,5 @@ echo '<plugin plugin="$PROJECT_ROOT/release/bin/mujoco_plugin/libdamper.so"/>'
 echo ""
 echo "或者设置环境变量:"
 echo "export MUJOCO_PLUGIN_PATH=\"$PROJECT_ROOT/release/bin/mujoco_plugin\""
+
+
