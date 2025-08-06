@@ -23,6 +23,7 @@ cmake -B build -DCMAKE_BUILD_TYPE=Release \
 cmake --build build -j
 ```
 
+需要将./simulate 和 mujoco_plugin 放在同一个文件夹
 （也可以把 MUJOCO_PLUGIN_DIR 环境变量指向 ~/run/mujoco_plugin，
 但官方的可执行文件默认就会搜索同级目录中的 mujoco_plugin。）
 
