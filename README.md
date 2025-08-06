@@ -7,6 +7,7 @@
 1. 克隆时一并初始化子仓库
 ```bash
 git clone --recurse-submodules git@github.com:ming751/Customize-Mujoco-Plugins.git
+git submodule update --init --recursive
 ```
 2. 编译安装mujoco
 ```bash
