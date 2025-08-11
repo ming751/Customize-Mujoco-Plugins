@@ -1,3 +1,7 @@
-*/release
-*/ccache
-*/.cache
+release/
+ccache/
+.cache/
+
+
+# **/ccache/
+# **/.cache/
