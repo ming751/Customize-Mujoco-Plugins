@@ -16,7 +16,13 @@ cmake -B build -DCMAKE_BUILD_TYPE=Release
 cmake --build build --target mujoco -j
 cmake --install build --prefix ../../release   # 安装到自定义前缀
 ```
-3. 编译插件
+3. 使用cache加速重复编译安装
+```bash
+sudo apt update
+sudo apt install ccache -y
+```
+
+4. 编译插件
 ```bash
 cd ~/my_plugins/damper
 cmake -B build -DCMAKE_BUILD_TYPE=Release \
