@@ -1,7 +1,8 @@
 release/
 ccache/
 .cache/
-
+.vscode/
+build/
+**/.cache/
 
 # **/ccache/
-# **/.cache/

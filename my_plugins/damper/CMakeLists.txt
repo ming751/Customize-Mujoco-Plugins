@@ -3,6 +3,11 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON CACHE BOOL "Enable compile_commands.json")
 cmake_minimum_required(VERSION 3.16)
 project(damper_plugin LANGUAGES CXX)
 
+# 设置 C++ 标准为 C++17
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+
 if(CMAKE_PREFIX_PATH)
   # 将 CMAKE_PREFIX_PATH 转换为绝对路径，并存入新变量 ABS_PREFIX_PATH
   # ABSOLUTE 会相对于 CMAKE_CURRENT_SOURCE_DIR (当前处理的CMakeLists.txt所在目录) 来解析
@@ -32,9 +37,9 @@ target_include_directories(damper PRIVATE
     "${MUJOCO_ROOT}/include")
 
 set_target_properties(damper PROPERTIES
-    LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/plugin) # 生成在 plugin/
+    LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}) # 生成在 plugin/
 
 # 安装配置：将插件安装到 release/bin/mujoco_plugin/
-install(TARGETS damper
-    LIBRARY DESTINATION "${CMAKE_CURRENT_SOURCE_DIR}/../../release/bin/mujoco_plugin"
-    COMPONENT plugins)
+# install(TARGETS damper
+#     LIBRARY DESTINATION "${CMAKE_CURRENT_SOURCE_DIR}/../../release/bin/mujoco_plugin"
+#     COMPONENT plugins)
