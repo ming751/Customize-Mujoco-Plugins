@@ -59,7 +59,7 @@ usage() {
 check_deps() {
     log_info "检查环境依赖..."
     local missing_deps=0
-    for cmd in cmake git g++ cache; do
+    for cmd in cmake git g++ ccache; do
         if ! command -v "$cmd" &> /dev/null; then
             log_warning "依赖 '$cmd' 未找到。"
             missing_deps=1
