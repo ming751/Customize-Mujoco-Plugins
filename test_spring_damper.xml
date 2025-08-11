@@ -13,7 +13,7 @@
       <instance name="spring2">
         <config key="body1" value="box2"/>
         <config key="body2" value="box3"/>
-        <config key="stiffness" value="100"/>
+        <config key="stiffness" value="1000"/>
         <config key="damping" value="10"/>
         <config key="restlength" value="0.5"/>
       </instance>

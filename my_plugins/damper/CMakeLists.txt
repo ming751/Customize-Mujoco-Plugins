@@ -17,12 +17,15 @@ else()
   message(STATUS "CMAKE_PREFIX_PATH is not set.")
 endif()
 # 告诉 CMake 去哪找 MuJoCo
-# 设置mujoco的安装路径（相对于当前CMakeLists.txt的路径）
-get_filename_component(MUJOCO_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/../../release" ABSOLUTE)
-message(STATUS "Looking for MuJoCo at: ${MUJOCO_ROOT}")
+## 设置mujoco的安装路径（相对于当前CMakeLists.txt的路径）
+
+# get_filename_component(MUJOCO_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/../../release" ABSOLUTE)
+# message(STATUS "Looking for MuJoCo at: ${MUJOCO_ROOT}")
 
 # 方法 1：直接指定路径查找mujoco
-find_package(mujoco REQUIRED CONFIG PATHS "${MUJOCO_ROOT}/lib/cmake/mujoco" NO_DEFAULT_PATH)
+#find_package(mujoco REQUIRED CONFIG PATHS "${MUJOCO_ROOT}/lib/cmake/mujoco" NO_DEFAULT_PATH)
+
+find_package(mujoco REQUIRED)
 
 add_library(damper SHARED
     spring_damper.cc

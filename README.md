@@ -9,7 +9,28 @@
 git clone --recurse-submodules git@github.com:ming751/Customize-Mujoco-Plugins.git
 git submodule update --init --recursive
 ```
-2. 编译安装mujoco
+
+2. 安装依赖
+```bash
+sudo apt update
+sudo apt install build-essential cmake git ccache -y
+```
+
+3. 一键运行安装mujoco以及插件
+```bash
+sudo chmod a+x auto_script.sh
+bash ./auto_script.sh
+```
+
+4. 验证插件是否正常安装以及运行
+```bash
+export PATH="$(pwd)/release/bin:$PATH"
+export LD_LIBRARY_PATH="$(pwd)/release/lib:$LD_LIBRARY_PATH"
+simulate test_spring_damper.xml
+```
+TODO：docker 不同系统安装
+
+<!-- 2. 编译安装mujoco
 ```bash
 cd ~/mujoco
 cmake -B build -DCMAKE_BUILD_TYPE=Release
@@ -20,9 +41,10 @@ cmake --install build --prefix ../../release   # 安装到自定义前缀
 ```bash
 sudo apt update
 sudo apt install ccache -y
-```
+``` -->
 
-4. 编译插件
+
+<!-- 4. 编译插件
 ```bash
 cd ~/my_plugins/damper
 cmake -B build -DCMAKE_BUILD_TYPE=Release \
@@ -45,4 +67,4 @@ cp build/plugin/libdamper.so     $RUN/mujoco_plugin/
 # run
 cd $RUN
 export LD_LIBRARY_PATH=$PWD/bin
-./bin/simulate ../test_spring_damper.xml
+./bin/simulate ../test_spring_damper.xml -->
