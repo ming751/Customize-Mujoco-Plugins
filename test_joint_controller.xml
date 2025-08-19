@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+<mujoco model="pdff_demo">
+  <option timestep="0.002"/>
+
+  <extension>
+    <plugin plugin="mujoco.ctrl.pdff">
+      <instance name="hip_pdff">
+        <config key="kp" value="200"/>
+        <config key="kd" value="10"/>
+        <!-- 可省略, 默认把输出写进 *_tau 通道 -->
+        <config key="target" value="hip_tau"/>
+      </instance>
+    </plugin>
+  </extension>
+
+<asset>
+    <texture type="skybox" builtin="gradient" rgb1="0.6 0.6 0.6" rgb2="0 0 0" width="512" height="512"/>
+
+    <texture name="texplane" type="2d" builtin="checker" rgb1=".25 .25 .25" rgb2=".3 .3 .3" width="512" height="512" mark="cross" markrgb=".8 .8 .8"/>
+
+    <material name="matplane" reflectance="0.3" texture="texplane" texrepeat="1 1" texuniform="true"/>
+  </asset>
+
+  <worldbody>
+    <geom name="floor" pos="0 0 -0.5" size="0 0 1" type="plane" material="matplane"/>
+
+    <light directional="true" diffuse=".8 .8 .8" specular=".2 .2 .2" pos="0 0 5" dir="0 0 -1"/>
+
+    <!-- 两刚体，通过一个转动关节连接 -->
+    <body name="body1" pos="0 0 0">
+      <geom type="capsule" size="0.03 0.2" rgba=".7 .7 .7 1"/>
+      <body name="body2" pos="0 0 0.4">
+        <joint name="hip" type="hinge" axis="0 1 0" range="-3.1416 3.1416"/>
+        <geom type="capsule" size="0.03 0.2" rgba=".5 .5 .9 1"/>
+      </body>
+    </body>
+  </worldbody>
+
+  <actuator>
+    <!-- 同一实例，三个执行器，名字后缀决定通道角色 -->
+    <plugin plugin="mujoco.ctrl.pdff" instance="hip_pdff" joint="hip" name="hip_qref"/>
+    <plugin plugin="mujoco.ctrl.pdff" instance="hip_pdff" joint="hip" name="hip_qdref"/>
+    <plugin plugin="mujoco.ctrl.pdff" instance="hip_pdff" joint="hip" name="hip_tau"/>
+  </actuator>
+</mujoco>

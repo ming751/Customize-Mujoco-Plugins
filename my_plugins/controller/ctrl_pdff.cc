@@ -149,6 +149,9 @@ void PdFf::RegisterPlugin() {
     return 0;
   };
 
+  // 无内部状态，提供空 reset 以满足接口
+  p.reset = +[](const mjModel*, mjtNum*, void*, int){};
+
   p.destroy = +[](mjData* d, int instance){
     delete reinterpret_cast<PdFf*>(d->plugin_data[instance]);
     d->plugin_data[instance] = 0;
