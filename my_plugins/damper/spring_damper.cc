@@ -121,7 +121,7 @@ Spring::Spring(SpringConfig config) : config_(std::move(config)) {}
 //   instance – 当前插件实例索引
 void Spring::Compute(const mjModel* m, mjData* d, int /*instance*/) {
   // ---------- 1) 获取两刚体质心位置（世界坐标系） ----------
-  mjtNum* pos1 = d->xpos + 3 * config_.body1_id;  // x,y,z
+  mjtNum* pos1 = d->xpos + 3 * config_.body1_id;  // x,y,z 地址
   mjtNum* pos2 = d->xpos + 3 * config_.body2_id;
 
   // ---------- 2) 计算两点之间的向量与距离 ----------

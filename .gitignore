@@ -4,5 +4,6 @@ ccache/
 .vscode/
 build/
 **/.cache/
+*.idx
 
 # **/ccache/
