@@ -19,7 +19,7 @@ PROJECT_ROOT="$SCRIPT_DIR"
 # 源文件和构建目录
 MUJOCO_SRC_DIR="$PROJECT_ROOT/mujoco"
 # 假设您的插件代码在 damper_plugin 目录下
-PLUGIN_SRC_DIR="$PROJECT_ROOT/my_plugins/damper"
+PLUGIN_SRC_DIR="$PROJECT_ROOT/my_plugins/controller"
 MUJOCO_BUILD_DIR="$MUJOCO_SRC_DIR/build"
 PLUGIN_BUILD_DIR="$PLUGIN_SRC_DIR/build"
 
