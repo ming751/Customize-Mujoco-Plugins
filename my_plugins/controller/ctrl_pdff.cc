@@ -106,6 +106,7 @@ std::unique_ptr<PdFf> PdFf::Create(const mjModel* m, int instance) {
     return nullptr;
   }
 
+  // 解析目标执行器所作用的关节与 DOF（若为关节传动）
   int joint_id = -1;
   int dof_adr = -1;
   int dof_num = 0;
@@ -118,18 +119,27 @@ std::unique_ptr<PdFf> PdFf::Create(const mjModel* m, int instance) {
     dof_num = (jtype == mjJNT_HINGE || jtype == mjJNT_SLIDE) ? 1
             : (jtype == mjJNT_BALL ? 3
             : (jtype == mjJNT_FREE ? 6 : 0));
-    // 现在可用 d->qfrc_actuator[dof_adr .. dof_adr + dof_num - 1]
-}
+    const char* jname = mj_id2name(m, mjOBJ_JOINT, joint_id);
+    if (jname && jname[0]) {
+      cfg.target_joint_name = std::string(jname);
+    }
+  }
 
   return std::unique_ptr<PdFf>(
-      new PdFf(cfg, id_qref, id_qdref, id_tau, id_target));
+      new PdFf(cfg, id_qref, id_qdref, id_tau, id_target,
+               joint_id, dof_adr, dof_num));
 }
 
 PdFf::PdFf(PdFfConfig config,
-           int id_qref, int id_qdref, int id_tau, int id_target)
+           int id_qref, int id_qdref, int id_tau, int id_target,
+           int joint_id_in, int dof_adr_in, int dof_num_in)
   : config_(std::move(config)),
     id_qref_(id_qref), id_qdref_(id_qdref), id_tau_(id_tau),
-    id_target_(id_target) {}
+    id_target_(id_target) {
+  joint_id = joint_id_in;
+  dof_adr = dof_adr_in;
+  dof_num = dof_num_in;
+}
 
 // compute 回调：在仿真步（插件阶段）被 MuJoCo 调用
 // 数据流：
@@ -163,9 +173,15 @@ void PdFf::Compute(const mjModel* m, mjData* d, int instance) {
   std::cout << "tau_ff: " << tau_ff << std::endl;
   std::cout << "d->actuator_force[id_target_]: " << d->actuator_force[id_target_] << std::endl;
 
-  // int j = mj_name2id(m, mjOBJ_JOINT, "hip");
-  // int dof = m->jnt_dofadr[j];
-  std::cout << "qfrc_actuator at hip = " << d->qfrc_actuator[dof_adr] << std::endl;
+  // 如为关节传动，可直接查看该 DOF 的最终关节力（调试）
+  if (dof_adr >= 0) {
+    std::cout << "joint_name: " << config_.target_joint_name.value() << std::endl;
+    std::cout << "joint_pos: " << d->qpos[joint_id] << std::endl;
+    std::cout << "joint_vel: " << d->qvel[joint_id] << std::endl;
+    std::cout << "joint_acc: " << d->qacc[joint_id] << std::endl;
+    std::cout << "joint_qfrc: " << d->qfrc_applied[joint_id] << std::endl;
+    std::cout << "qfrc_actuator at target dof[0] = " << d->qfrc_actuator[dof_adr] << std::endl;
+  }
 }
 
 // 注册插件：向 MuJoCo 声明本插件的能力、属性与回调
