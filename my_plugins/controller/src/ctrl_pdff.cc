@@ -182,6 +182,8 @@ void PdFf::Compute(const mjModel* m, mjData* d, int instance) {
     std::cout << "joint_qfrc: " << d->qfrc_applied[joint_id] << std::endl;
     std::cout << "qfrc_actuator at target dof[0] = " << d->qfrc_actuator[dof_adr] << std::endl;
   }
+
+  std::cout << "time: " << d->time << std::endl;
 }
 
 // 注册插件：向 MuJoCo 声明本插件的能力、属性与回调

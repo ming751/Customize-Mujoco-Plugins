@@ -1,0 +1,63 @@
+<mujoco model="spring_damper_test">
+  <extension>
+    <plugin plugin="mujoco.passive.spring">
+      <instance name="spring1">
+        <config key="body1" value="box1"/>
+        <config key="body2" value="box2"/>
+        <config key="stiffness" value="0"/>
+        <config key="damping" value="10"/>
+        <config key="restlength" value="0.5"/>
+      </instance>
+
+      <instance name="spring2">
+        <config key="body1" value="box2"/>
+        <config key="body2" value="box3"/>
+        <config key="stiffness" value="1000"/>
+        <config key="damping" value="10"/>
+        <config key="restlength" value="0.5"/>
+      </instance>
+
+
+
+
+    </plugin>
+
+    <plugin plugin="sensor_read_publish">
+      <instance name="ins">
+        <!-- 输出到标准输出（默认） -->
+        <!-- <config key="mode" value="print"/> -->
+        <!-- 或者输出到文件，指定路径 -->
+        <config key="mode" value="file"/>
+         <config key="file" value="inspector.log"/> 
+        <!-- 输出频率（Hz） -->
+        <config key="rate" value="10"/>
+      </instance>
+    </plugin>
+  </extension>
+
+  <worldbody>
+  
+    <geom name="floor" type="plane" pos="0 0 0" size="2 2 0.1" rgba="0.8 0.8 0.8 1"/>
+    
+    <body name="box1" pos="0 0 1">
+      <joint type="free"/>
+      <geom type="box" size="0.1 0.1 0.1" rgba="1 0 0 1"/>
+    </body>
+    
+    <body name="box2" pos="0 0 2">
+      <joint type="free"/>
+      <geom type="box" size="0.1 0.1 0.1" rgba="0 1 0 1"/>
+    </body>
+
+    <body name="box3" pos="0 0 3">
+      <joint type="free"/>
+      <geom type="box" size="0.1 0.1 0.1" rgba="0 0 1 1"/>
+    </body>
+  </worldbody>
+<!-- 
+  <sensor>
+    <plugin plugin="mujoco.tools.inspector" instance="ins"/>
+  </sensor> -->
+  
+
+</mujoco>

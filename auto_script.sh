@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# Damper插件自动化构建和安装脚本
-# 用途：编译damper插件并安装到release/bin/mujoco_plugin/目录
+# MuJoCo 插件自动化构建和安装脚本
+# 用途：编译 my_plugins 下的所有插件，并安装到 release/bin/mujoco_plugin/
 
 set -e  # 遇到错误立即退出
 
@@ -18,10 +18,8 @@ PROJECT_ROOT="$SCRIPT_DIR"
 
 # 源文件和构建目录
 MUJOCO_SRC_DIR="$PROJECT_ROOT/mujoco"
-# 假设您的插件代码在 damper_plugin 目录下
-PLUGIN_SRC_DIR="$PROJECT_ROOT/my_plugins/controller"
 MUJOCO_BUILD_DIR="$MUJOCO_SRC_DIR/build"
-PLUGIN_BUILD_DIR="$PLUGIN_SRC_DIR/build"
+PLUGINS_ROOT_DIR="$PROJECT_ROOT/my_plugins"
 
 # 发布和安装目录
 RELEASE_DIR="$PROJECT_ROOT/release"
@@ -75,7 +73,13 @@ check_deps() {
 clean() {
     log_info "开始清理构建产物..."
     rm -rf "$MUJOCO_BUILD_DIR"
-    rm -rf "$PLUGIN_BUILD_DIR"
+    # 清理所有插件的 build 目录
+    if [ -d "$PLUGINS_ROOT_DIR" ]; then
+        for dir in "$PLUGINS_ROOT_DIR"/*; do
+            [ -d "$dir" ] || continue
+            rm -rf "$dir/build"
+        done
+    fi
     rm -rf "$RELEASE_DIR"
     log_success "清理完成。"
 }
@@ -105,43 +109,62 @@ build_mujoco() {
     log_success "MuJoCo 处理完成。"
 }
 
-# 编译插件
-build_plugin() {
-    log_info "开始构建 Damper 插件..."
-    # 告诉CMake去哪里查找MuJoCo的库和头文件
+# 编译 my_plugins 下所有插件
+build_plugins() {
+    log_info "开始构建所有插件..."
     local cmake_prefix_path="-DCMAKE_PREFIX_PATH=$RELEASE_DIR"
-    
-    log_info "配置 Damper 插件..."
-    cmake -S "$PLUGIN_SRC_DIR" -B "$PLUGIN_BUILD_DIR" \
-        -DCMAKE_BUILD_TYPE=Release \
-        -DCMAKE_C_COMPILER_LAUNCHER=ccache \
-        -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
-        "$cmake_prefix_path"
-
-    log_info "编译 Damper 插件..."
-    cmake --build "$PLUGIN_BUILD_DIR" -j"$(nproc)"
-    log_success "Damper 插件编译完成。"
+    if [ ! -d "$PLUGINS_ROOT_DIR" ]; then
+        log_warning "未找到插件根目录: $PLUGINS_ROOT_DIR"
+        return
+    fi
+    for plugin_dir in "$PLUGINS_ROOT_DIR"/*; do
+        [ -d "$plugin_dir" ] || continue
+        if [ ! -f "$plugin_dir/CMakeLists.txt" ]; then
+            log_warning "跳过(无CMakeLists): $plugin_dir"
+            continue
+        fi
+        local build_dir="$plugin_dir/build"
+        log_info "配置插件: $plugin_dir"
+        cmake -S "$plugin_dir" -B "$build_dir" \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_C_COMPILER_LAUNCHER=ccache \
+            -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
+            "$cmake_prefix_path"
+        log_info "编译插件: $plugin_dir"
+        cmake --build "$build_dir" -j"$(nproc)"
+        log_success "编译完成: $plugin_dir"
+    done
 }
 
-# 安装插件
-install_plugin() {
-    log_info "开始安装 Damper 插件..."
-    
-    # 创建安装目录
+# 安装所有插件（复制 .so 到安装目录）
+install_plugins() {
+    log_info "开始安装所有插件..."
     mkdir -p "$PLUGIN_INSTALL_DIR"
-
-    # 查找编译好的插件文件（通常是.so文件）并复制
-    local plugin_file
-    plugin_file=$(find "$PLUGIN_BUILD_DIR" -maxdepth 1 -type f -name "*.so" | head -n 1)
-
-    if [ -z "$plugin_file" ]; then
-        log_error "在 $PLUGIN_BUILD_DIR 中未找到编译好的插件文件 (.so)！"
+    local any_found=0
+    for plugin_dir in "$PLUGINS_ROOT_DIR"/*; do
+        [ -d "$plugin_dir" ] || continue
+        local build_dir="$plugin_dir/build"
+        if [ ! -d "$build_dir" ]; then
+            log_warning "未构建，跳过安装: $plugin_dir"
+            continue
+        fi
+        local so_files
+        so_files=$(find "$build_dir" -maxdepth 1 -type f -name "*.so" || true)
+        if [ -z "$so_files" ]; then
+            log_warning "未找到 .so: $build_dir"
+            continue
+        fi
+        for so in $so_files; do
+            cp "$so" "$PLUGIN_INSTALL_DIR/"
+            any_found=1
+            log_info "已安装: $(basename "$so")"
+        done
+    done
+    if [ "$any_found" -eq 1 ]; then
+        log_success "所有可用插件已安装到: $PLUGIN_INSTALL_DIR"
+    else
+        log_warning "未安装任何插件 (.so 未找到)"
     fi
-
-    log_info "找到插件: $plugin_file"
-    cp "$plugin_file" "$PLUGIN_INSTALL_DIR/"
-
-    log_success "Damper 插件已安装到: $PLUGIN_INSTALL_DIR"
 }
 
 
@@ -149,7 +172,7 @@ install_plugin() {
 
 # --- 主函数 ---
 main() {
-    echo -e "${BLUE}=== Damper插件自动化构建脚本 V2.0 ===${NC}"
+    echo -e "${BLUE}=== MuJoCo 插件自动化构建脚本 ===${NC}"
     echo "项目根目录: $PROJECT_ROOT"
     echo "-------------------------------------"
 
@@ -164,8 +187,8 @@ main() {
         # 默认执行完整流程
         check_deps
         build_mujoco
-        build_plugin
-        install_plugin
+        build_plugins
+        install_plugins
     fi
 
     echo "-------------------------------------"
