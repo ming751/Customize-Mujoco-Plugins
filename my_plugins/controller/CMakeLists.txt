@@ -27,22 +27,32 @@ endif()
 
 find_package(mujoco REQUIRED)
 
+# 创建共享库目标
 add_library(controller SHARED
-    ctrl_pdff.cc
-    ctrl_pdff.h
-    register.cc)
+  src/ctrl_pdff.cc
+  src/register.cc)
 
-# 链接mujoco库
+# 设置包含目录
+target_include_directories(controller PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/include)
+
+# 链接 MuJoCo 库
 target_link_libraries(controller PRIVATE mujoco::mujoco)
 
-# 设置包含目录（通常由target自动处理，但为了确保可以显式设置）
-target_include_directories(controller PRIVATE
-    "${MUJOCO_ROOT}/include")
-
+# 设置输出目录
 set_target_properties(controller PROPERTIES
-    LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}) # 生成在 plugin/
+    LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 
 # 安装配置：将插件安装到 release/bin/mujoco_plugin/
-# install(TARGETS damper
+# install(TARGETS controller
 #     LIBRARY DESTINATION "${CMAKE_CURRENT_SOURCE_DIR}/../../release/bin/mujoco_plugin"
 #     COMPONENT plugins)
+
+
+# include_directories(
+#     ${CMAKE_CURRENT_SOURCE_DIR}/include
+# )  #动态库头文件地址
+
+# link_directories(
+#     ${CMAKE_CURRENT_SOURCE_DIR}/../../release/bin/mujoco_plugin
+# )  连接动态库

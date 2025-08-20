@@ -8,7 +8,7 @@
   <extension>
     <plugin plugin="mujoco.ctrl.pdff">
       <instance name="hip_pdff">
-        <config key="kp" value="0"/>
+        <config key="kp" value="10"/>
         <config key="kd" value="1"/>
         <!-- 可省略, 默认把输出写进 *_tau 通道 -->
         <config key="target" value="hip_tau"/>
