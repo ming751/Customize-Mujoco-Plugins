@@ -1,0 +1,289 @@
+MEMORY
+  total            13.2 MB
+  struct          159.2 KB
+  buffer            6.4 KB
+  arena            13.0 MB, used 0.0%
+
+SIZES
+  narena                13631488
+  nbuffer               6544
+  nplugin               1
+  maxuse_stack          312
+  maxuse_arena          328
+  maxuse_con            0
+  maxuse_efc            0
+  ncon                  0
+  ne                    0
+  nf                    0
+  nl                    0
+  nefc                  0
+  nJ                    0
+  nA                    0
+  nisland               0
+  nidof                 0
+  threadpool            0
+
+TIMER
+    0:  duration =  0.24       number = 5
+    1:  duration =  0.23       number = 5
+    2:  duration =  0          number = 0
+    3:  duration =  0.052      number = 5
+    4:  duration =  0.016      number = 5
+    5:  duration =  0.15       number = 5
+    6:  duration =  0.0013     number = 5
+    7:  duration =  0.0051     number = 5
+    8:  duration =  0.026      number = 5
+    9:  duration =  0.006      number = 5
+    10:  duration =  0          number = 0
+    11:  duration =  0.012      number = 5
+    12:  duration =  0.00099    number = 5
+    13:  duration =  0          number = 0
+    14:  duration =  0          number = 0
+
+ENERGY =   0         0       
+
+TIME =  29      
+
+QPOS
+   43      
+
+QVEL
+   2       
+
+QACC_WARMSTART
+   5.3e-14 
+
+CTRL
+   0       
+   2       
+   0       
+
+QFRC_APPLIED
+   0       
+
+XFRC_APPLIED
+   0         0         0         0         0         0       
+   0         0         0         0         0         0       
+   0         0         0         0         0         0       
+
+QACC
+   5.3e-14 
+
+XPOS
+   0         0         0       
+   0         0         0       
+  -0.2      -0.33      7.2e-17 
+
+XQUAT
+   1         0         0         0       
+   0.71      0.71      0         0       
+  -0.6      -0.6       0.37      0.37    
+
+XMAT
+   1         0         0         0         1         0         0         0         1       
+   1         0         0         0         2.2e-16  -1         0         1         2.2e-16 
+   0.45      0        -0.9      -0.9       2.2e-16  -0.45      1.1e-16   1         1.1e-16 
+
+XIPOS
+   0         0         0       
+   0         0         0       
+  -0.2      -0.33      7.2e-17 
+
+XIMAT
+   1         0         0         0         1         0         0         0         1       
+   1         0         0         0         2.2e-16  -1         0         1         2.2e-16 
+   0.45      0        -0.9      -0.9       2.2e-16  -0.45      1.1e-16   1         1.1e-16 
+
+XANCHOR
+   0        -0.23      7.2e-17 
+
+XAXIS
+   0         2.2e-16   1       
+
+GEOM_XPOS
+   0         0        -0.5     
+   0         0         0       
+  -0.2      -0.33      7.2e-17 
+
+GEOM_XMAT
+   1         0         0         0         1         0         0         0         1       
+   1         0         0         0         2.2e-16  -1         0         1         2.2e-16 
+   0.45      0        -0.9      -0.9       2.2e-16  -0.45      1.1e-16   1         1.1e-16 
+
+LIGHT_XPOS
+   0         0         5       
+
+LIGHT_XDIR
+   0         0        -1       
+
+SUBTREE_COM
+  -0.1      -0.16      3.6e-17 
+  -0.1      -0.16      3.6e-17 
+  -0.2      -0.33      7.2e-17 
+
+CDOF
+   0         2.2e-16   1        -0.062    -0.1       2.2e-17 
+
+CINERT
+   0         0         0         0         0         0         0         0         0         0       
+   0.053     0.013     0.066    -0.02      4.5e-18   1.2e-17   0.13      0.2      -4.5e-17   1.2     
+   0.037     0.029     0.066    -0.028     5.5e-18   9.8e-18  -0.13     -0.2       4.5e-17   1.2     
+
+ACTUATOR_LENGTH
+   43      
+   43      
+   43      
+
+actuator_moment
+---
+ x |
+ x |
+ x |
+---
+
+ACTUATOR_MOMENT
+     0:  1       
+     0:  1       
+     0:  1       
+
+CRB
+   0         0         0         0         0         0         0         0         0         0       
+   0.091     0.042     0.13     -0.049     1e-17     2.1e-17   0         0         0         2.5     
+   0.037     0.029     0.066    -0.028     5.5e-18   9.8e-18  -0.13     -0.2       4.5e-17   1.2     
+
+QM
+   0.083   
+
+M
+     0:  0.083   
+
+QLD
+     0:  0.083   
+
+QLDIAGINV
+   12      
+
+QH
+     0:  0.083   
+
+QHDIAGINV
+   12      
+
+B: body-dof matrix
+---
+ x |
+ x |
+ x |
+---
+
+B_rownnz              1 1 1
+
+B_rowadr              0 1 2
+
+B_colind              0 0 0
+
+M: reduced inertia matrix
+---
+ x |
+---
+
+M_rownnz              1
+
+M_rowadr              0
+
+M_colind              0
+
+mapM2M                0
+
+D: dof-dof matrix
+---
+ D |
+---
+
+D_rownnz              1
+
+D_rowadr              0
+
+D_colind              0
+
+mapM2D                0
+
+mapD2M                0
+
+CONTACT
+ACTUATOR_VELOCITY
+   2       
+   2       
+   2       
+
+CVEL
+   0         0         0         0         0         0       
+   0         0         0         0         0         0       
+   0         4.4e-16   2        -0.12     -0.2       4.5e-17 
+
+CDOF_DOT
+   0         0         0         0         0         0       
+
+QFRC_BIAS
+   0       
+
+QFRC_SPRING
+   0       
+
+QFRC_DAMPER
+   0       
+
+QFRC_GRAVCOMP
+   0       
+
+QFRC_FLUID
+   0       
+
+QFRC_PASSIVE
+   0       
+
+SUBTREE_LINVEL
+   0         0         0       
+   0         0         0       
+   0         0         0       
+
+SUBTREE_ANGMOM
+   0         0         0       
+   0         0         0       
+   0         0         0       
+
+ACTUATOR_FORCE
+   0       
+   0       
+   4.4e-15 
+
+QFRC_ACTUATOR
+   4.4e-15 
+
+QFRC_SMOOTH
+   4.4e-15 
+
+QACC_SMOOTH
+   5.3e-14 
+
+QFRC_CONSTRAINT
+   0       
+
+QFRC_INVERSE
+   0       
+
+CACC
+   0         0         0         0         0         0       
+   0         0         0         0         0         0       
+   0         0         0         0         0         0       
+
+CFRC_INT
+   0         0         0         0         0         0       
+   0         0         0         0         0         0       
+   0         0         0         0         0         0       
+
+CFRC_EXT
+   0         0         0         0         0         0       
+   0         0         0         0         0         0       
+   0         0         0         0         0         0       
+

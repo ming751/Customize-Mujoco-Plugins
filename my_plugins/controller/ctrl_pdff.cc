@@ -5,6 +5,8 @@
 #include <string>
 #include <optional>
 #include <algorithm>
+#include <iostream>
+
 
 namespace mujoco::plugin::ctrl {
 namespace {
@@ -45,6 +47,14 @@ std::string ActName(const mjModel* m, int act_id) {
 
 }  // namespace
 
+// 工厂：从模型与实例配置创建 PdFf 控制对象
+// 约定：同一个插件实例 instance 下面必须有 3 个 actuator，名字后缀分别为：
+//   - *_qref 或 :qref   （期望位置）
+//   - *_qdref 或 :qdref （期望速度）
+//   - *_tau  或 :tau    （前馈力矩输入；默认也作为输出力矩目标通道）
+// 可选 config：
+//   - kp、kd：PD 参数
+//   - target：显式指定输出写入的 actuator 名（否则优先 *_tau，其次选第一个同实例 actuator）
 std::unique_ptr<PdFf> PdFf::Create(const mjModel* m, int instance) {
   PdFfConfig cfg;
   cfg.kp = ReadDoubleAttr(m, instance, "kp").value_or(0.0);
@@ -56,7 +66,7 @@ std::unique_ptr<PdFf> PdFf::Create(const mjModel* m, int instance) {
 
   for (int i = 0; i < m->nu; ++i) {
     if (m->actuator_plugin[i] != instance) continue;
-    const std::string name = ActName(m, i);
+    const std::string name = ActName(m, i);  //通过actuator_plugin[i]获取actuator_name
     if (EndsWithLower(name, "_qref") || EndsWithLower(name, ":qref")) {
       id_qref = i;
     } else if (EndsWithLower(name, "_qdref") || EndsWithLower(name, ":qdref")) {
@@ -96,6 +106,21 @@ std::unique_ptr<PdFf> PdFf::Create(const mjModel* m, int instance) {
     return nullptr;
   }
 
+  int joint_id = -1;
+  int dof_adr = -1;
+  int dof_num = 0;
+
+  int trntype = m->actuator_trntype[id_target];
+  if (trntype == mjTRN_JOINT || trntype == mjTRN_JOINTINPARENT) {
+    joint_id = m->actuator_trnid[2*id_target + 0];  // 绑定的关节 id
+    int jtype = m->jnt_type[joint_id];
+    dof_adr = m->jnt_dofadr[joint_id];
+    dof_num = (jtype == mjJNT_HINGE || jtype == mjJNT_SLIDE) ? 1
+            : (jtype == mjJNT_BALL ? 3
+            : (jtype == mjJNT_FREE ? 6 : 0));
+    // 现在可用 d->qfrc_actuator[dof_adr .. dof_adr + dof_num - 1]
+}
+
   return std::unique_ptr<PdFf>(
       new PdFf(cfg, id_qref, id_qdref, id_tau, id_target));
 }
@@ -105,6 +130,12 @@ PdFf::PdFf(PdFfConfig config,
   : config_(std::move(config)),
     id_qref_(id_qref), id_qdref_(id_qdref), id_tau_(id_tau),
     id_target_(id_target) {}
+
+// compute 回调：在仿真步（插件阶段）被 MuJoCo 调用
+// 数据流：
+//   输入：d->ctrl[三路] = {期望位置, 期望速度, 前馈力矩}
+//   反馈：d->actuator_length/velocity[目标通道] = 执行器空间的位姿/速度（由引擎计算）
+//   输出：d->actuator_force[目标通道] += kp*(err) + kd*(err_dot) + tau_ff
 
 void PdFf::Compute(const mjModel* m, mjData* d, int instance) {
   // 取三路输入
@@ -127,21 +158,34 @@ void PdFf::Compute(const mjModel* m, mjData* d, int instance) {
   // 其他两个输入执行器避免产生额外力
   d->actuator_force[id_qref_] = 0;
   d->actuator_force[id_qdref_] = 0;
+
+  std::cout << "id_target_: " << id_target_ << std::endl;
+  std::cout << "tau_ff: " << tau_ff << std::endl;
+  std::cout << "d->actuator_force[id_target_]: " << d->actuator_force[id_target_] << std::endl;
+
+  // int j = mj_name2id(m, mjOBJ_JOINT, "hip");
+  // int dof = m->jnt_dofadr[j];
+  std::cout << "qfrc_actuator at hip = " << d->qfrc_actuator[dof_adr] << std::endl;
 }
 
+// 注册插件：向 MuJoCo 声明本插件的能力、属性与回调
 void PdFf::RegisterPlugin() {
   mjpPlugin p;
-  mjp_defaultPlugin(&p);
+  mjp_defaultPlugin(&p); // 清零并填入默认值，防止未初始化字段
 
+  // 唯一名称与能力：ACTUATOR 表示它在执行器通道上工作
   p.name = "mujoco.ctrl.pdff";
   p.capabilityflags |= mjPLUGIN_ACTUATOR;
 
+  // 可在 XML <config> 中使用的属性列表
   static const char* kAttrs[] = {"kp","kd","target"};
   p.nattribute = 3;
   p.attributes = kAttrs;
 
+  // 无内部“状态向量”（与 d->plugin_state 相关）
   p.nstate = +[](const mjModel*, int){ return 0; };
 
+  // init：为每个实例创建 PdFf 对象，并把指针放到 d->plugin_data[instance]
   p.init = +[](const mjModel* m, mjData* d, int instance){
     auto obj = PdFf::Create(m, instance);
     if (!obj) return -1;
@@ -152,16 +196,19 @@ void PdFf::RegisterPlugin() {
   // 无内部状态，提供空 reset 以满足接口
   p.reset = +[](const mjModel*, mjtNum*, void*, int){};
 
+  // destroy：释放在 init 阶段分配的对象内存
   p.destroy = +[](mjData* d, int instance){
     delete reinterpret_cast<PdFf*>(d->plugin_data[instance]);
     d->plugin_data[instance] = 0;
   };
 
+  // compute：仿真步中被调用的主回调；将插件数据指针还原为 PdFf* 并调用成员函数
   p.compute = +[](const mjModel* m, mjData* d, int instance, int){
     auto* obj = reinterpret_cast<PdFf*>(d->plugin_data[instance]);
     obj->Compute(m, d, instance);
   };
 
+  //完成注册插件
   mjp_registerPlugin(&p);
 }
 

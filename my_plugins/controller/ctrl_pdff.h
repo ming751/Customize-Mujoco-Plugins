@@ -33,6 +33,10 @@ class PdFf {
   int id_qdref_  = -1;
   int id_tau_    = -1;
   int id_target_ = -1;  // 输出力写入的 actuator
+
+  int joint_id = -1;
+  int dof_adr = -1;
+  int dof_num = 0;
 };
 
 }  // namespace mujoco::plugin::ctrl
