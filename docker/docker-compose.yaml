@@ -1,14 +1,12 @@
-version: '3.8'   # Docker Compose 版本
-
 services:        # 定义服务
   dev-environment:  # 服务名称
     build:          # 构建配置
-      context: ./ubuntu-local   # Dockerfile所在目录
+      context: ./ubuntu-focal   # Dockerfile所在目录
       args:
         - USER_ID=${USER_ID:-1000}
         - GROUP_ID=${GROUP_ID:-1000}
-    image: my-cpp-project:ubuntu-focal  # 生成的镜像名称
-    container_name: my-cpp-dev          # 容器名称
+    image: ming-dev:ubuntu-focal  # 生成的镜像名称
+    container_name: ming-dev-ubuntu-focal          # 容器名称
     volumes:
       # 挂载项目目录到容器
       - ..:/workspace                   # .. = 您电脑上的项目目录
@@ -23,6 +21,9 @@ services:        # 定义服务
       # 设置环境变量
       - TERM=xterm-256color
       - CCACHE_DIR=/workspace/.ccache
+
+      # - http_proxy=http://host.docker.internal:7897  # 代理地址
+      # - https_proxy=http://host.docker.internal:7897  # 代理地址 
     # 保持容器运行
     tty: true           # 分配伪终端
     stdin_open: true    # 保持标准输入开放
@@ -30,7 +31,11 @@ services:        # 定义服务
     restart: unless-stopped
     # 网络端口映射（如果需要）
     # ports:
-    #   - "8080:8080"
+    #   - "7897:7897"
+
+    # extra_hosts:
+    #   - "host.docker.internal:host-gateway" # 确保 host.docker.internal 能被正确解析    
+    network_mode: host
 
 volumes:
   ccache-data:  # 持久化 ccache 数据

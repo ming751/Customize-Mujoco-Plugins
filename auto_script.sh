@@ -95,7 +95,7 @@ build_mujoco() {
     log_info "配置 MuJoCo (Release模式)..."
     # -S 指定源码目录, -B 指定构建目录
     cmake -S "$MUJOCO_SRC_DIR" -B "$MUJOCO_BUILD_DIR" \
-          -DCMAKE_BUILD_TYPE=Release \
+          -DCMAKE_BUILD_TYPE=Debug \
           -DCMAKE_C_COMPILER_LAUNCHER=ccache \
           -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
 

@@ -6,6 +6,5 @@ build/
 **/.cache/
 *.idx
 .log
-
-
-# **/ccache/
+**/build/
+**/ccache/

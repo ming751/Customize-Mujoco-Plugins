@@ -1,5 +1,5 @@
-# 基于 Ubuntu 20.04 LTS
-FROM ubuntu:focal
+# 基于 Ubuntu 24.04 LTS
+FROM ubuntu:noble
 
 # 设置非交互式环境（避免安装时的交互提示）
 ENV DEBIAN_FRONTEND=noninteractive
@@ -8,8 +8,8 @@ ENV DEBIAN_FRONTEND=noninteractive
 ENV TZ=Asia/Shanghai
 
 # 创建非root用户（安全最佳实践）
-RUN useradd -m -s /bin/bash developer && \
-    usermod -aG sudo developer
+# RUN useradd -m -s /bin/bash developer && \
+#     usermod -aG sudo developer
 
 # 更新包列表并安装开发工具
 RUN apt-get update && apt-get install -y \
@@ -56,7 +56,7 @@ RUN gcc --version && \
 WORKDIR /workspace
 
 # 切换到非root用户
-USER developer
+# USER developer
 
 # 设置默认命令
 CMD ["/bin/bash"]
